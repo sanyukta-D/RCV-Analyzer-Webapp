@@ -5,7 +5,7 @@ A web application for analyzing Ranked Choice Voting elections, built on the res
 - *Optimal Strategies in Ranked Choice Voting*
 - *Simpler Than You Think: The Practical Dynamics of Ranked Choice Voting*
 
-**Live app:** [rcv-analysis.streamlit.app](https://rcv-analysis.streamlit.app)
+**Live app:** [rcv-analyzer.streamlit.app](https://rcv-analyzer.streamlit.app)
 
 ## What It Does
 
