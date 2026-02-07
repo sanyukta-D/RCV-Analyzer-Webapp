@@ -106,6 +106,60 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# === INTRODUCTORY SECTIONS FOR NEW USERS ===
+
+with st.expander("What is Ranked Choice Voting?", expanded=False):
+    st.markdown("""
+**Ranked Choice Voting (RCV)** is an electoral system where voters rank candidates
+in order of preference instead of choosing just one.
+
+**How it works (single-winner / IRV):**
+1. Each voter ranks candidates: 1st choice, 2nd choice, 3rd choice, etc.
+2. If no candidate has a majority of first-choice votes, the candidate with the
+   fewest votes is eliminated.
+3. Voters who ranked that candidate first have their votes transferred to their
+   next-ranked choice.
+4. This process repeats until one candidate reaches a majority and wins.
+
+**Multi-winner elections (STV):**
+When multiple seats are being filled (e.g., a city council), the system uses
+**Single Transferable Vote (STV)**. Candidates who exceed a winning threshold
+(called the **Droop quota**) are elected, and their surplus votes are transferred
+proportionally. The process continues, eliminating the lowest candidates and
+transferring votes, until all seats are filled.
+
+**Ballot exhaustion** occurs when all of a voter's ranked choices have been
+eliminated, so their ballot can no longer be counted in subsequent rounds.
+
+**Droop quota** (shown in the results): the minimum number of votes needed to
+guarantee a seat. It equals floor(total votes / (seats + 1)) + 1. For a
+single-winner race, this simplifies to a simple majority (> 50%).
+    """)
+
+with st.expander("What does this tool analyze?", expanded=False):
+    st.markdown("""
+This tool evaluates four key attributes of an RCV election:
+
+**1. Victory Gap & Competitiveness**
+How many additional votes would each candidate need to win? A small gap means the
+race was close; a large gap means the outcome was decisive.
+
+**2. Ballot Exhaustion Impact**
+Could the outcome have changed if voters who exhausted their ballots had ranked
+more candidates? Six statistical models estimate this probability.
+
+**3. Strategic Complexity**
+Is the best path to victory simply getting more of your own supporters to vote
+(a "selfish" strategy), or does it require more complex maneuvering like boosting
+a weaker rival to split the opposition (a "non-selfish" strategy)?
+
+**4. Preference Order Alignment**
+Does the order in which candidates were eliminated match how close they actually
+were to winning? When these align, the election results are straightforward
+to interpret.
+
+    """)
+
 # === HELPER FUNCTIONS ===
 
 # Color scheme from the paper
@@ -703,6 +757,36 @@ if uploaded_file is not None:
                 st.markdown("---")
                 st.markdown("# Election Analysis Results")
 
+                with st.expander("How to read these results", expanded=False):
+                    st.markdown("""
+**Color coding in the Victory Gap table:**
+- **Green** = Winner or very close to winning (gap < 5%)
+- **Yellow** = Contender with a realistic path (gap 5-20%)
+- **Peach/Salmon** = Competitive but distant (gap 20-45%)
+- **Pink/Gray** = Far behind or beyond the analysis threshold
+
+*For multi-winner elections (k > 1), these thresholds are scaled proportionally.*
+
+**Ballot Exhaustion Impact:**
+- If a candidate's **exhaustion % > victory gap %**, completing those
+  exhausted ballots *could* theoretically change the outcome.
+- The probability models estimate how likely that change actually is.
+- A high probability means ballot exhaustion meaningfully affected
+  competitiveness; a low probability means the outcome is robust.
+
+**Strategic Complexity:**
+- **Selfish** = the candidate's best strategy is simply getting more of their own supporters to vote.
+  This is the straightforward, expected case.
+- **Non-Selfish** = the candidate benefits from a more complex strategy, such as supporting
+  a weaker rival to change the elimination order. This is rare in real elections.
+
+**Preference Order Alignment:**
+- A **match** means the order candidates were eliminated lines up with how
+  close they were to winning. The results tell a clear story.
+- A **mismatch** means some candidates were eliminated earlier than their
+  competitiveness would suggest, or vice versa.
+                    """)
+
                 # Overview metrics
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
@@ -722,8 +806,6 @@ if uploaded_file is not None:
                 candidates_retained = analysis_result.get("candidates_retained", [])
 
                 # Debug info about reduction
-                st.caption(f"Debug: Retained {len(candidates_retained)} candidates: {candidates_retained[:10]}{'...' if len(candidates_retained) > 10 else ''}")
-                st.caption(f"Debug: Strategies computed for {len(strategies)} candidates: {list(strategies.keys())}")
 
                 if candidates_removed:
                     removed_names = [reverse_mapping.get(c, c) for c in candidates_removed if c in reverse_mapping or c in candidates_removed]
@@ -1181,15 +1263,6 @@ if uploaded_file is not None:
                                     for model_name, prob, _ in prob_models:
                                         st.markdown(f"| {model_name} | {prob:.1f}% |")
                                     st.markdown(f"| **Combined** | **{combined_prob:.1f}%** |")
-
-                                    # Show model descriptions with toggle checkbox
-                                    if st.checkbox(f"📖 Show model descriptions for {cand['name']}", key=f"models_{cand['code']}"):
-                                        for model_name, prob, description in prob_models:
-                                            st.markdown(f"**{model_name}** ({prob:.1f}%)")
-                                            st.caption(description)
-                                            st.markdown("")
-                                        st.markdown(f"**Combined** ({combined_prob:.1f}%)")
-                                        st.caption("Weighted average across all six models from the paper, emphasizing bootstrap methods.")
 
                                     # Interpretation
                                     if combined_prob >= 40:
