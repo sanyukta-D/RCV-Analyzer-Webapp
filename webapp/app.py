@@ -384,13 +384,15 @@ if use_example and uploaded_file is None:
     # Format: display_name -> (file_path, k, budget, keep_at_least)
     curated_examples = {}
 
-    # === HIGH-PROFILE SINGLE-WINNER ELECTIONS ===
+    # === CURATED SINGLE-WINNER ELECTIONS ===
+    # (filename, k, budget, keep_at_least, one-line description)
     single_winner_files = {
-        "Alaska 2022 US House Special": ("Alaska_08162022_HouseofRepresentativesSpecial.csv", 1, 10.0, 7),
-        "Alaska 2020 Presidential": ("Alaska_04102020_PRESIDENTOFTHEUNITEDSTATES.csv", 1, 40.0, 7),
-        "Minneapolis 2021 Mayor": ("Minneapolis_20211102_Mayor.csv", 1, 10.0, 7),
-        "San Francisco 2011 Mayor": ("SanFrancisco_20111108_Mayor.csv", 1, 10.0, 7),
-        "Burlington 2009 Mayor": ("Burlington_20090303_Mayor.csv", 1, 40.0, 7),
+        "Oakland 2010 Mayor — Classic RCV comeback, trailing candidate wins": ("Oakland_20101102_Mayor.csv", 1, 10.0, 7),
+        "NYC 2025 Council D41 — Competitive 8-way Democratic primary in Brooklyn": ("NewYorkCity_20250624_DEMCityCouncilD41.csv", 1, 10.0, 7),
+        "Alaska 2022 US House Special — First statewide RCV election in the US": ("Alaska_08162022_HouseofRepresentativesSpecial.csv", 1, 50.0, 7),
+        "Burlington 2024 Mayor — Burlington's return to RCV after 15 years": ("Burlington_20240305_Mayor.csv", 1, 50.0, 7),
+        "San Francisco 2011 Mayor — 16 candidates in a major city race": ("SanFrancisco_20111108_Mayor.csv", 1, 10.0, 7),
+        "Minneapolis 2021 Mayor — 18 candidates, tests candidate reduction": ("Minneapolis_20211102_Mayor.csv", 1, 10.0, 7),
     }
 
     for name, (filename, ex_k, ex_budget, ex_keep) in single_winner_files.items():
@@ -401,10 +403,8 @@ if use_example and uploaded_file is None:
     # === MULTI-WINNER ELECTIONS (Portland k=3) ===
     portland_path = base_path / "portland" / "data"
     portland_configs = {
-        "Portland 2024 District 1 (k=3)": ("Dis_1/Election_results_dis1.csv", 3, 4.5, 8),
-        "Portland 2024 District 2 (k=3)": ("Dis_2/Election_results_dis2.csv", 3, 6.5, 8),
-        "Portland 2024 District 3 (k=3)": ("Dis_3/Election_results_dis3.csv", 3, 13.0, 8),
-        "Portland 2024 District 4 (k=3)": ("Dis_4/Election_results_dis4.csv", 3, 9.5, 8),
+        "Portland 2024 District 3 (k=3) — 30 candidates, 3 seats, largest multi-winner RCV in US": ("Dis_3/Election_results_dis3.csv", 3, 13.0, 8),
+        "Portland 2024 District 4 (k=3) — 30-candidate field with coalition dynamics": ("Dis_4/Election_results_dis4.csv", 3, 9.5, 8),
     }
 
     for name, (rel_path, ex_k, ex_budget, ex_keep) in portland_configs.items():
@@ -413,7 +413,6 @@ if use_example and uploaded_file is None:
             curated_examples[name] = (filepath, ex_k, ex_budget, ex_keep)
 
     if curated_examples:
-        # Group examples by category for better UX
         example_names = list(curated_examples.keys())
 
         selected_example = st.selectbox(
