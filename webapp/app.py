@@ -796,7 +796,8 @@ if uploaded_file is not None:
                 with col2:
                     st.metric("Total Votes", f"{total_votes:,}")
                 with col3:
-                    st.metric("Quota (Droop)", f"{Q:,.0f}")
+                    droop_display = int(total_votes // (k + 1)) + 1
+                    st.metric("Quota (Droop)", f"{droop_display:,}")
                 with col4:
                     st.metric("Final Exhaustion", f"{exhaustion_rate:.1f}%")
 
