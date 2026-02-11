@@ -208,6 +208,9 @@ st.markdown("""
         border-left: 4px solid #17a2b8;
         margin: 1rem 0;
     }
+    .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
+        font-size: 1.1rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -860,7 +863,7 @@ if uploaded_file is not None:
                 # RESULTS DISPLAY
                 # ========================================
                 st.markdown("---")
-                st.markdown("## Results")
+                st.markdown("# RCV Results")
 
                 # Overview metrics
                 col1, col2, col3, col4 = st.columns(4)
@@ -909,7 +912,7 @@ if uploaded_file is not None:
                 elif computed_threshold < budget_percent and strategies:
                     st.info(f"**Note:** Due to election complexity ({len(candidates_list)} candidates), strategies were computed at **{computed_threshold:.1f}%** budget threshold (reduced from your {budget_percent:.0f}% setting).")
 
-                st.markdown("## Analysis")
+                st.markdown("# Detailed Insights")
 
                 with st.expander("How to read these results", expanded=False):
                     st.markdown("""
