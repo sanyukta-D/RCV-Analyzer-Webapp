@@ -860,37 +860,7 @@ if uploaded_file is not None:
                 # RESULTS DISPLAY
                 # ========================================
                 st.markdown("---")
-                st.markdown("# Election Analysis Results")
-
-                with st.expander("How to read these results", expanded=False):
-                    st.markdown("""
-**Color coding in the Victory Gap table:**
-- **Green** = Winner or very close to winning (gap < 5%)
-- **Yellow** = Contender with a realistic path (gap 5-20%)
-- **Peach/Salmon** = Competitive but distant (gap 20-45%)
-- **Pink/Gray** = Far behind or beyond the analysis threshold
-
-*For multi-winner elections (k > 1), these thresholds are scaled proportionally.*
-
-**Ballot Exhaustion Impact:**
-- If a candidate's **exhaustion % > victory gap %**, completing those
-  exhausted ballots *could* theoretically change the outcome.
-- The probability models estimate how likely that change actually is.
-- A high probability means ballot exhaustion meaningfully affected
-  competitiveness; a low probability means the outcome is robust.
-
-**Strategic Complexity:**
-- **Selfish** = the candidate's best strategy is simply getting more of their own supporters to vote.
-  This is the straightforward, expected case.
-- **Non-Selfish** = the candidate benefits from a more complex strategy, such as supporting
-  a weaker rival to change the elimination order. This is rare in real elections.
-
-**Preference Order Alignment:**
-- A **match** means the order candidates were eliminated lines up with how
-  close they were to winning. The results tell a clear story.
-- A **mismatch** means some candidates were eliminated earlier than their
-  competitiveness would suggest, or vice versa.
-                    """)
+                st.markdown("## Results")
 
                 # Overview metrics
                 col1, col2, col3, col4 = st.columns(4)
@@ -938,6 +908,38 @@ if uploaded_file is not None:
                         st.write(", ".join(removed_names) if removed_names else str(candidates_removed))
                 elif computed_threshold < budget_percent and strategies:
                     st.info(f"**Note:** Due to election complexity ({len(candidates_list)} candidates), strategies were computed at **{computed_threshold:.1f}%** budget threshold (reduced from your {budget_percent:.0f}% setting).")
+
+                st.markdown("## Analysis")
+
+                with st.expander("How to read these results", expanded=False):
+                    st.markdown("""
+**Color coding in the Victory Gap table:**
+- **Green** = Winner or very close to winning (gap < 5%)
+- **Yellow** = Contender with a realistic path (gap 5-20%)
+- **Peach/Salmon** = Competitive but distant (gap 20-45%)
+- **Pink/Gray** = Far behind or beyond the analysis threshold
+
+*For multi-winner elections (k > 1), these thresholds are scaled proportionally.*
+
+**Ballot Exhaustion Impact:**
+- If a candidate's **exhaustion % > victory gap %**, completing those
+  exhausted ballots *could* theoretically change the outcome.
+- The probability models estimate how likely that change actually is.
+- A high probability means ballot exhaustion meaningfully affected
+  competitiveness; a low probability means the outcome is robust.
+
+**Strategic Complexity:**
+- **Selfish** = the candidate's best strategy is simply getting more of their own supporters to vote.
+  This is the straightforward, expected case.
+- **Non-Selfish** = the candidate benefits from a more complex strategy, such as supporting
+  a weaker rival to change the elimination order. This is rare in real elections.
+
+**Preference Order Alignment:**
+- A **match** means the order candidates were eliminated lines up with how
+  close they were to winning. The results tell a clear story.
+- A **mismatch** means some candidates were eliminated earlier than their
+  competitiveness would suggest, or vice versa.
+                    """)
 
                 # ========================================
                 tab_gap, tab_exhaust, tab_strat, tab_align, tab_summary = st.tabs([
