@@ -63,6 +63,119 @@ except ImportError as e:
 from rcv_strategies.core.strategy import _cleanup_pool
 _cleanup_pool()
 
+def generate_round_table(ballot_counts, candidates_list, k, reverse_mapping):
+    """Generate round-by-round RCV tabulation table.
+
+    Returns a pandas DataFrame with candidates as rows and rounds as columns,
+    showing first-choice tallies after each elimination.
+    """
+    from copy import deepcopy
+    remaining = deepcopy(candidates_list)
+    current_ballots = dict(ballot_counts)
+    total_votes = sum(current_ballots.values())
+    droop = int(total_votes // (k + 1)) + 1
+
+    rounds_data = {}
+    eliminated_per_round = []
+    round_num = 1
+    winners = []
+
+    while len(remaining) > k and len(remaining) > 0:
+        # Count first-choice votes
+        vote_counts = {}
+        for cand in remaining:
+            vote_counts[cand] = 0
+        for ballot, count in current_ballots.items():
+            if ballot:
+                first = ballot[0]
+                if first in vote_counts:
+                    vote_counts[first] += count
+
+        # Exhausted votes
+        active_votes = sum(vote_counts.values())
+        exhausted = total_votes - active_votes
+
+        # Record this round
+        col = f"Round {round_num}"
+        round_col = {}
+        for cand in candidates_list:
+            if cand in vote_counts:
+                round_col[cand] = vote_counts[cand]
+            else:
+                round_col[cand] = ""
+        round_col["Exhausted"] = exhausted if exhausted > 0 else ""
+        rounds_data[col] = round_col
+
+        # For STV: check if anyone exceeds quota
+        if k > 1:
+            quota_winners = [c for c in remaining if vote_counts.get(c, 0) >= droop and c not in winners]
+            if quota_winners:
+                for w in quota_winners:
+                    winners.append(w)
+                    surplus = vote_counts[w] - droop
+                    if surplus > 0 and vote_counts[w] > 0:
+                        transfer_ratio = surplus / vote_counts[w]
+                        new_ballots = {}
+                        for ballot, count in current_ballots.items():
+                            if ballot and ballot[0] == w:
+                                new_ballot = ''.join(c for c in ballot[1:] if c in remaining and c != w)
+                                if new_ballot:
+                                    new_ballots[new_ballot] = new_ballots.get(new_ballot, 0) + count * transfer_ratio
+                            else:
+                                new_ballots[ballot] = new_ballots.get(ballot, 0) + count
+                        current_ballots = new_ballots
+                    remaining = [c for c in remaining if c != w]
+                    eliminated_per_round.append(f"{reverse_mapping.get(w, w)} (elected)")
+                if len(winners) >= k:
+                    break
+                round_num += 1
+                continue
+
+        # Find and eliminate candidate with fewest votes
+        worst = min(remaining, key=lambda c: vote_counts.get(c, 0))
+        eliminated_per_round.append(reverse_mapping.get(worst, worst))
+        remaining = [c for c in remaining if c != worst]
+
+        # Redistribute: remove eliminated candidate from ballots
+        new_ballots = {}
+        for ballot, count in current_ballots.items():
+            new_ballot = ''.join(c for c in ballot if c != worst)
+            if new_ballot:
+                new_ballots[new_ballot] = new_ballots.get(new_ballot, 0) + count
+        current_ballots = new_ballots
+        round_num += 1
+
+    # Final round: show remaining candidates
+    if remaining:
+        vote_counts = {}
+        for cand in remaining:
+            vote_counts[cand] = 0
+        for ballot, count in current_ballots.items():
+            if ballot:
+                first = ballot[0]
+                if first in vote_counts:
+                    vote_counts[first] += count
+        active_votes = sum(vote_counts.values())
+        exhausted = total_votes - active_votes
+
+        col = f"Round {round_num}"
+        round_col = {}
+        for cand in candidates_list:
+            if cand in vote_counts:
+                round_col[cand] = vote_counts[cand]
+            else:
+                round_col[cand] = ""
+        round_col["Exhausted"] = exhausted if exhausted > 0 else ""
+        rounds_data[col] = round_col
+
+    # Build DataFrame with candidate names as rows
+    df = pd.DataFrame(rounds_data)
+    # Replace code keys with real names
+    name_index = [reverse_mapping.get(c, c) for c in candidates_list] + ["Exhausted"]
+    df.index = name_index
+
+    return df
+
 # === PAGE CONFIG ===
 st.set_page_config(
     page_title="RCV Election Analyzer",
@@ -800,6 +913,13 @@ if uploaded_file is not None:
                     st.metric("Quota (Droop)", f"{droop_display:,}")
                 with col4:
                     st.metric("Final Exhaustion", f"{exhaustion_rate:.1f}%")
+
+                # Round-by-round tabulation
+                with st.expander("Round-by-round results", expanded=False):
+                    round_df = generate_round_table(ballot_counts, candidates_list, k, reverse_mapping)
+                    # Format numbers with commas, keep empty strings for eliminated candidates
+                    styled_df = round_df.apply(lambda col: col.map(lambda x: f"{x:,.0f}" if isinstance(x, (int, float)) and x != "" else x))
+                    st.dataframe(styled_df, use_container_width=True)
 
                 # Candidate removal and threshold info
                 candidates_removed = analysis_result.get("candidates_removed", [])
