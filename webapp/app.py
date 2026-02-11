@@ -915,7 +915,7 @@ if uploaded_file is not None:
                     st.metric("Final Exhaustion", f"{exhaustion_rate:.1f}%")
 
                 # Round-by-round tabulation
-                st.markdown("## Round-by-Round Results")
+                st.markdown("#### Round-by-Round Results")
                 round_df = generate_round_table(ballot_counts, candidates_list, k, reverse_mapping)
                 formatted_df = round_df.apply(lambda col: col.map(lambda x: f"{x:,.0f}" if isinstance(x, (int, float)) and x != "" else x))
 
