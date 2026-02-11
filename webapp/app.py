@@ -625,13 +625,6 @@ if uploaded_file is not None:
         candidates_mapping = {name: (ascii_uppercase + ascii_lowercase)[i] for i, name in enumerate(candidates)}
         reverse_mapping = {v: k for k, v in candidates_mapping.items()}
 
-        with st.expander("Candidate Mapping"):
-            mapping_df = pd.DataFrame([
-                {"Letter": v, "Candidate": k}
-                for k, v in candidates_mapping.items()
-            ])
-            st.dataframe(mapping_df, use_container_width=True, hide_index=True)
-
         # Run analysis
         if st.button("Run Analysis", type="primary", use_container_width=True):
 
