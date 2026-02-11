@@ -208,42 +208,6 @@ st.markdown("""
         border-left: 4px solid #17a2b8;
         margin: 1rem 0;
     }
-    .section-results {
-        background: #ffffff;
-        padding: 0.5rem 0;
-    }
-    .section-analysis-header {
-        background: linear-gradient(90deg, #1f4e79, #2d5aa0);
-        color: white;
-        padding: 0.8rem 1.2rem;
-        border-radius: 0.5rem 0.5rem 0 0;
-        margin-top: 2rem;
-        margin-bottom: 0;
-    }
-    .section-analysis-header h2 {
-        margin: 0;
-        font-size: 1.3rem;
-        color: white;
-    }
-    .section-analysis-header p {
-        margin: 0.2rem 0 0 0;
-        font-size: 0.85rem;
-        opacity: 0.85;
-    }
-    .analysis-card {
-        background: #f0f4f8;
-        border-left: 4px solid #1f4e79;
-        padding: 1.2rem 1.5rem;
-        border-radius: 0 0 0.5rem 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-    .round-table-container {
-        background: #fafbfc;
-        border: 1px solid #e1e4e8;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        margin: 0.5rem 0 1rem 0;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -661,6 +625,13 @@ if uploaded_file is not None:
         candidates_mapping = {name: (ascii_uppercase + ascii_lowercase)[i] for i, name in enumerate(candidates)}
         reverse_mapping = {v: k for k, v in candidates_mapping.items()}
 
+        with st.expander("Candidate Mapping"):
+            mapping_df = pd.DataFrame([
+                {"Letter": v, "Candidate": k}
+                for k, v in candidates_mapping.items()
+            ])
+            st.dataframe(mapping_df, use_container_width=True, hide_index=True)
+
         # Run analysis
         if st.button("Run Analysis", type="primary", use_container_width=True):
 
@@ -944,12 +915,19 @@ if uploaded_file is not None:
                     st.metric("Final Exhaustion", f"{exhaustion_rate:.1f}%")
 
                 # Round-by-round tabulation
-                st.markdown("## Election Results")
+                st.markdown("## Round-by-Round Results")
                 round_df = generate_round_table(ballot_counts, candidates_list, k, reverse_mapping)
-                styled_df = round_df.apply(lambda col: col.map(lambda x: f"{x:,.0f}" if isinstance(x, (int, float)) and x != "" else x))
-                st.markdown('<div class="round-table-container">', unsafe_allow_html=True)
-                st.dataframe(styled_df, use_container_width=True)
-                st.markdown('</div>', unsafe_allow_html=True)
+                formatted_df = round_df.apply(lambda col: col.map(lambda x: f"{x:,.0f}" if isinstance(x, (int, float)) and x != "" else x))
+
+                def shade_rows(row):
+                    if row.name == "Exhausted":
+                        return ['background-color: #e8e8e8; font-style: italic'] * len(row)
+                    idx = list(formatted_df.index).index(row.name)
+                    color = '#f0f4f8' if idx % 2 == 0 else '#ffffff'
+                    return [f'background-color: {color}'] * len(row)
+
+                styled = formatted_df.style.apply(shade_rows, axis=1)
+                st.dataframe(styled, use_container_width=True)
 
                 # Candidate removal and threshold info
                 candidates_removed = analysis_result.get("candidates_removed", [])
@@ -969,19 +947,9 @@ if uploaded_file is not None:
                     st.info(f"**Note:** Due to election complexity ({len(candidates_list)} candidates), strategies were computed at **{computed_threshold:.1f}%** budget threshold (reduced from your {budget_percent:.0f}% setting).")
 
                 # ========================================
-                # ANALYSIS SECTION — Novel contributions
-                # ========================================
-                st.markdown("""
-<div class="section-analysis-header">
-    <h2>Election Analysis</h2>
-    <p>Computational insights beyond standard tabulation</p>
-</div>
-""", unsafe_allow_html=True)
-
-                # ========================================
                 # ATTRIBUTE 1: VICTORY GAP & MARGIN OF VICTORY
                 # ========================================
-                st.markdown("### 1. Victory Gap & Competitiveness")
+                st.markdown("## 1. Victory Gap & Competitiveness")
                 st.markdown("""
                 The **Victory Gap** shows how many additional votes (as % of total) each candidate needs to win.
                 The **Margin of Victory** is the smallest gap among non-winners - lower = more competitive.
@@ -1135,7 +1103,7 @@ if uploaded_file is not None:
                 # ========================================
                 # ATTRIBUTE 2: BALLOT EXHAUSTION IMPACT
                 # ========================================
-                st.markdown("### 2. Ballot Exhaustion Impact")
+                st.markdown("## 2. Ballot Exhaustion Impact")
                 st.markdown("""
                 **Ballot exhaustion** occurs when a voter's ranked choices are all eliminated.
                 If exhaustion % > victory gap %, completing those ballots *could* change the outcome.
@@ -1476,7 +1444,7 @@ if uploaded_file is not None:
                 # ========================================
                 # ATTRIBUTE 3: STRATEGIC COMPLEXITY
                 # ========================================
-                st.markdown("### 3. Strategic Complexity")
+                st.markdown("## 3. Strategic Complexity")
                 st.markdown("""
                 **Selfish Strategy**: Optimal path to victory is simply adding votes for oneself.
                 **Non-Selfish Strategy**: Optimal strategy requires supporting other candidates (spoiler effects).
@@ -1503,7 +1471,7 @@ if uploaded_file is not None:
                 # ========================================
                 # ATTRIBUTE 4: PREFERENCE ORDER ALIGNMENT
                 # ========================================
-                st.markdown("### 4. Preference Order Alignment")
+                st.markdown("## 4. Preference Order Alignment")
                 st.markdown("""
                 Does the **Social Choice Order** (elimination sequence) match the **Victory Gap Order** (sorted by closeness to winning)?
                 **Match** = RCV results are transparent. **No Match** = formal results may obscure true competitiveness.
@@ -1535,7 +1503,7 @@ if uploaded_file is not None:
                 # ========================================
                 # SUMMARY INSIGHTS
                 # ========================================
-                st.markdown("### Summary: Key Insights")
+                st.markdown("## Summary: Key Insights")
 
                 insights = []
 
@@ -1582,7 +1550,7 @@ if uploaded_file is not None:
                         "strategies": {k: v for k, v in strategies.items()}
                     })
 
-                st.markdown("### Export Results")
+                st.markdown("## Export Results")
                 col1, col2 = st.columns(2)
                 with col1:
                     csv_data = display_df.to_csv(index=False)
