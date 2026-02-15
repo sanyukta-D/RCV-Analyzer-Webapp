@@ -503,10 +503,10 @@ if use_example and uploaded_file is None:
     # === CURATED SINGLE-WINNER ELECTIONS ===
     # (filename, k, budget, keep_at_least, one-line description)
     single_winner_files = {
-        "Oakland 2010 Mayor — Classic RCV comeback, trailing candidate wins": ("Oakland_20101102_Mayor.csv", 1, 25.0, 7),
+        "Burlington 2009 Mayor — The most debated RCV election in US history": ("Burlington_20090303_Mayor.csv", 1, 50.0, 7),
         "NYC 2021 Council D23 — Non-selfish strategies, featured in paper": ("NewYorkCity_20210622_DEM_CityCouncilD23.csv", 1, 50.0, 7),
         "Alaska 2022 US House Special — First statewide RCV election in the US": ("Alaska_08162022_HouseofRepresentativesSpecial.csv", 1, 50.0, 7),
-        "Burlington 2024 Mayor — Burlington's return to RCV after 15 years": ("Burlington_20240305_Mayor.csv", 1, 50.0, 7),
+        "Minneapolis 2017 Council Ward 3 — Runner-up's path to victory runs through a rival": ("Minneapolis_20171107_CityCouncilWard3.csv", 1, 50.0, 7),
         "Maine 2018 US House CD2 — First congressional race decided by RCV in US history": ("Maine_20181106_CongressionalDistrict2.csv", 1, 50.0, 7),
         "Minneapolis 2021 Mayor — 18 candidates, tests candidate reduction": ("Minneapolis_20211102_Mayor.csv", 1, 10.0, 7),
     }
