@@ -504,7 +504,7 @@ if use_example and uploaded_file is None:
     # (filename, k, budget, keep_at_least, one-line description)
     single_winner_files = {
         "Oakland 2010 Mayor — Classic RCV comeback, trailing candidate wins": ("Oakland_20101102_Mayor.csv", 1, 25.0, 7),
-        "NYC 2025 Council D8 — 7-candidate Democratic primary in Upper Manhattan": ("NewYorkCity_20250624_DEMCityCouncilD8.csv", 1, 50.0, 7),
+        "NYC 2021 Council D23 — Non-selfish strategies, featured in paper": ("NewYorkCity_20210622_DEM_CityCouncilD23.csv", 1, 50.0, 7),
         "Alaska 2022 US House Special — First statewide RCV election in the US": ("Alaska_08162022_HouseofRepresentativesSpecial.csv", 1, 50.0, 7),
         "Burlington 2024 Mayor — Burlington's return to RCV after 15 years": ("Burlington_20240305_Mayor.csv", 1, 50.0, 7),
         "Maine 2018 US House CD2 — First congressional race decided by RCV in US history": ("Maine_20181106_CongressionalDistrict2.csv", 1, 50.0, 7),
