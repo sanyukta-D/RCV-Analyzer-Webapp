@@ -497,16 +497,7 @@ with st.sidebar:
 # === MAIN CONTENT ===
 
 # File upload
-st.markdown("""
-<div style="border:2px dashed #93b4d4; border-radius:0.6rem; padding:1.1rem 1.4rem;
-            background:#f7fafd; margin-bottom:1rem; display:flex; align-items:center; gap:1rem;">
-  <span style="font-size:2rem;">⬆️</span>
-  <div>
-    <strong style="font-size:1.05rem;">Upload your RCV election data</strong><br>
-    <span style="font-size:0.88rem; color:#555;">CSV file with ranked ballot data — or explore a curated example below.</span>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+st.markdown("## Upload Election Data")
 
 col1, col2 = st.columns([2, 1])
 
@@ -597,8 +588,6 @@ if use_example and uploaded_file is None:
             help=f"{n_single} single-winner (k=1) elections and {n_portland} multi-winner Portland (k=3) elections. Each entry shows the election name followed by a brief description of its notable dynamics."
         )
 
-        selected_idx = example_names.index(selected_example) + 1
-        st.caption(f"Showing example {selected_idx} of {n_total}  ·  Use the dropdown above to navigate")
 
         filepath, rec_k, rec_budget, rec_keep = curated_examples[selected_example]
         uploaded_file = filepath
