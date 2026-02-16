@@ -208,8 +208,42 @@ st.markdown("""
         border-left: 4px solid #17a2b8;
         margin: 1rem 0;
     }
+    /* ── Tab bar ── */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 6px;
+        background: #f0f4fa;
+        padding: 6px 8px;
+        border-radius: 0.6rem;
+    }
+    .stTabs [data-baseweb="tab-list"] button {
+        border-radius: 0.45rem;
+        padding: 0.45rem 1.1rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        color: #374151;
+        background: transparent;
+        border: none;
+        transition: background 0.15s, color 0.15s;
+    }
+    .stTabs [data-baseweb="tab-list"] button:hover {
+        background: #dde8f5;
+        color: #1f4e79;
+    }
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+        background: #1f4e79;
+        color: white !important;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(31,78,121,0.25);
+    }
     .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
-        font-size: 1.1rem;
+        font-size: 0.95rem;
+    }
+    /* Tab content area border */
+    .stTabs [data-baseweb="tab-panel"] {
+        border: 1px solid #dde3ed;
+        border-radius: 0 0.5rem 0.5rem 0.5rem;
+        padding: 1.2rem 1.2rem 0.5rem;
+        margin-top: -1px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -503,8 +537,8 @@ if use_example and uploaded_file is None:
     # === CURATED SINGLE-WINNER ELECTIONS ===
     # (filename, k, budget, keep_at_least, one-line description)
     single_winner_files = {
-        "Minneapolis 2017 Council Ward 3 — Spoiler dynamics: winning requires boosting a rival": ("Minneapolis_20171107_CityCouncilWard3.csv", 1, 50.0, 7),
-        "Burlington 2009 Mayor — The most debated RCV election in US history": ("Burlington_20090303_Mayor.csv", 1, 50.0, 7),
+        "Minneapolis 2017 Council Ward 3 — Classic vote-splitting with spoiler dynamics": ("Minneapolis_20171107_CityCouncilWard3.csv", 1, 50.0, 7),
+        "Burlington 2009 Mayor — Winner came from behind, overturning first-round plurality": ("Burlington_20090303_Mayor.csv", 1, 50.0, 7),
         "Alaska 2022 US House Special — First statewide RCV election in the US": ("Alaska_08162022_HouseofRepresentativesSpecial.csv", 1, 50.0, 7),
         "Maine 2018 US House CD2 — First congressional RCV race in US history": ("Maine_20181106_CongressionalDistrict2.csv", 1, 50.0, 7),
         "NYC 2021 Council D23 — 7-candidate primary with tight margins and complex transfers": ("NewYorkCity_20210622_DEM_CityCouncilD23.csv", 1, 50.0, 7),
@@ -520,7 +554,7 @@ if use_example and uploaded_file is None:
     portland_path = base_path / "portland" / "data"
     portland_configs = {
         "Portland 2024 District 3 (k=3) — 30 candidates, 3 seats, largest multi-winner RCV in US": ("Dis_3/Election_results_dis3.csv", 3, 13.0, 8),
-        "Portland 2024 District 4 (k=3) — 30-candidate field with coalition dynamics": ("Dis_4/Election_results_dis4.csv", 3, 9.5, 8),
+        "Portland 2024 District 4 (k=3) — 30-candidate field, 3 winners with tight margins": ("Dis_4/Election_results_dis4.csv", 3, 9.5, 8),
     }
 
     for name, (rel_path, ex_k, ex_budget, ex_keep) in portland_configs.items():
@@ -530,12 +564,23 @@ if use_example and uploaded_file is None:
 
     if curated_examples:
         example_names = list(curated_examples.keys())
+        n_single = len(single_winner_files)
+        n_portland = len(portland_configs)
+        n_total = len(curated_examples)
+
+        st.info(
+            f"**{n_total} curated elections available** ({n_single} single-winner · {n_portland} multi-winner). "
+            "Use the dropdown below to explore each one — settings update automatically."
+        )
 
         selected_example = st.selectbox(
-            "Select example election",
+            f"Select example election (1–{n_total})",
             options=example_names,
-            help="Single-winner (k=1) or multi-winner Portland (k=3)"
+            help=f"{n_single} single-winner (k=1) elections and {n_portland} multi-winner Portland (k=3) elections. Each entry shows the election name followed by a brief description of its notable dynamics."
         )
+
+        selected_idx = example_names.index(selected_example) + 1
+        st.caption(f"Showing example {selected_idx} of {n_total}  ·  Use the dropdown above to navigate")
 
         filepath, rec_k, rec_budget, rec_keep = curated_examples[selected_example]
         uploaded_file = filepath
@@ -946,7 +991,7 @@ if uploaded_file is not None:
 
                 # ========================================
                 tab_gap, tab_exhaust, tab_strat, tab_align, tab_summary = st.tabs([
-                    "Victory Gap", "Ballot Exhaustion", "Strategic Complexity", "Preference Alignment", "Summary & Export"
+                    "📊 Victory Gap", "🗳️ Ballot Exhaustion", "♟️ Strategic Complexity", "🔀 Preference Alignment", "📋 Summary & Export"
                 ])
 
                 with tab_gap:
