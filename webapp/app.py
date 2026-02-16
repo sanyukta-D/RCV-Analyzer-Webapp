@@ -288,27 +288,41 @@ single-winner race, this simplifies to a simple majority (> 50%).
 
 with st.expander("What does this tool analyze?", expanded=False):
     st.markdown("""
-This tool evaluates four key attributes of an RCV election:
-
-**1. Victory Gap & Competitiveness**
-How many additional votes would each candidate need to win? A small gap means the
-race was close; a large gap means the outcome was decisive.
-
-**2. Ballot Exhaustion Impact**
-Could the outcome have changed if voters who exhausted their ballots had ranked
-more candidates? Six statistical models estimate this probability.
-
-**3. Strategic Complexity**
-Is the best path to victory simply getting more of your own supporters to vote
-(a "selfish" strategy), or does it require more complex maneuvering like boosting
-a weaker rival to split the opposition (a "non-selfish" strategy)?
-
-**4. Preference Order Alignment**
-Does the order in which candidates were eliminated match how close they actually
-were to winning? When these align, the election results are straightforward
-to interpret.
-
-    """)
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.9rem; margin-top:0.3rem;">
+  <div style="background:#f0f6ff; border-left:4px solid #1f4e79; border-radius:0.5rem; padding:0.85rem 1rem;">
+    <div style="font-size:1.4rem; margin-bottom:0.25rem;">📊</div>
+    <strong>Victory Gap &amp; Competitiveness</strong>
+    <p style="margin:0.3rem 0 0; font-size:0.88rem; color:#374151;">
+      How many additional votes would each candidate need to win?
+      A small gap means the race was close; a large gap means the outcome was decisive.
+    </p>
+  </div>
+  <div style="background:#fff8ed; border-left:4px solid #d97706; border-radius:0.5rem; padding:0.85rem 1rem;">
+    <div style="font-size:1.4rem; margin-bottom:0.25rem;">🗳️</div>
+    <strong>Ballot Exhaustion Impact</strong>
+    <p style="margin:0.3rem 0 0; font-size:0.88rem; color:#374151;">
+      Could the outcome have changed if voters had ranked more candidates?
+      Six statistical models estimate this probability.
+    </p>
+  </div>
+  <div style="background:#f3f0ff; border-left:4px solid #6d28d9; border-radius:0.5rem; padding:0.85rem 1rem;">
+    <div style="font-size:1.4rem; margin-bottom:0.25rem;">♟️</div>
+    <strong>Strategic Complexity</strong>
+    <p style="margin:0.3rem 0 0; font-size:0.88rem; color:#374151;">
+      Is the optimal path to victory simple self-promotion, or does it require
+      boosting a rival to split the opposition (non-selfish strategy)?
+    </p>
+  </div>
+  <div style="background:#f0fdf4; border-left:4px solid #15803d; border-radius:0.5rem; padding:0.85rem 1rem;">
+    <div style="font-size:1.4rem; margin-bottom:0.25rem;">🔀</div>
+    <strong>Preference Order Alignment</strong>
+    <p style="margin:0.3rem 0 0; font-size:0.88rem; color:#374151;">
+      Does the elimination order match how close candidates actually were to winning?
+      Mismatches reveal hidden complexity in the result.
+    </p>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
 # === HELPER FUNCTIONS ===
 
@@ -483,7 +497,16 @@ with st.sidebar:
 # === MAIN CONTENT ===
 
 # File upload
-st.markdown("## Upload Election Data")
+st.markdown("""
+<div style="border:2px dashed #93b4d4; border-radius:0.6rem; padding:1.1rem 1.4rem;
+            background:#f7fafd; margin-bottom:1rem; display:flex; align-items:center; gap:1rem;">
+  <span style="font-size:2rem;">⬆️</span>
+  <div>
+    <strong style="font-size:1.05rem;">Upload your RCV election data</strong><br>
+    <span style="font-size:0.88rem; color:#555;">CSV file with ranked ballot data — or explore a curated example below.</span>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
 col1, col2 = st.columns([2, 1])
 
@@ -567,11 +590,6 @@ if use_example and uploaded_file is None:
         n_single = len(single_winner_files)
         n_portland = len(portland_configs)
         n_total = len(curated_examples)
-
-        st.info(
-            f"**{n_total} curated elections available** ({n_single} single-winner · {n_portland} multi-winner). "
-            "Use the dropdown below to explore each one — settings update automatically."
-        )
 
         selected_example = st.selectbox(
             f"Select example election (1–{n_total})",
@@ -1131,6 +1149,18 @@ if uploaded_file is not None:
                     display_df = display_df.drop(columns=['Was Filtered', 'Strategy Not Computed'])
                     display_df['Exhaustion (%)'] = display_df['Exhaustion (%)'].apply(lambda x: f"{x:.2f}")
 
+                    st.markdown("""
+<div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-bottom:0.5rem; font-size:0.82rem;">
+  <span style="color:#555; margin-right:0.3rem;">Legend:</span>
+  <span style="background:rgb(189,223,167); border-radius:3px; padding:2px 9px;">Winner</span>
+  <span style="background:rgb(223,240,216); border-radius:3px; padding:2px 9px;">Near Winner</span>
+  <span style="background:rgb(253,245,206); border-radius:3px; padding:2px 9px;">Contender</span>
+  <span style="background:rgb(253,231,208); border-radius:3px; padding:2px 9px;">Competitive</span>
+  <span style="background:rgb(248,218,205); border-radius:3px; padding:2px 9px;">Distant</span>
+  <span style="background:rgb(242,201,198); border-radius:3px; padding:2px 9px;">Far Behind</span>
+  <span style="background:rgb(220,220,220); border-radius:3px; padding:2px 9px;">Beyond Threshold</span>
+</div>
+""", unsafe_allow_html=True)
                     styled_df = display_df.style.apply(style_victory_table, axis=1)
                     st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
