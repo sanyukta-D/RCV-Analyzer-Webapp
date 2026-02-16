@@ -537,7 +537,7 @@ with col2:
         to parse and convert CVR files. Its default "rank" format output
         (`rank1, rank2, ...`) is directly compatible with this tool.
         """)
-    use_example = st.checkbox("Use example data")
+    use_example = st.checkbox("🗂️ Use a curated example election")
 
 # Load example data if requested
 if use_example and uploaded_file is None:
@@ -583,9 +583,9 @@ if use_example and uploaded_file is None:
         n_total = len(curated_examples)
 
         selected_example = st.selectbox(
-            f"Select example election (1–{n_total})",
+            "Select an election",
             options=example_names,
-            help=f"{n_single} single-winner (k=1) elections and {n_portland} multi-winner Portland (k=3) elections. Each entry shows the election name followed by a brief description of its notable dynamics."
+            help=f"{n_total} curated elections: {n_single} single-winner (k=1) and {n_portland} multi-winner Portland (k=3). Settings update automatically when you switch."
         )
 
 
