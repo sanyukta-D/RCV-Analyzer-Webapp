@@ -966,35 +966,6 @@ if uploaded_file is not None:
 
                 st.markdown("# Detailed Insights")
 
-                with st.expander("How to read these results", expanded=False):
-                    st.markdown("""
-**Color coding in the Victory Gap table:**
-- **Green** = Winner or very close to winning (gap < 5%)
-- **Yellow** = Contender with a realistic path (gap 5-20%)
-- **Peach/Salmon** = Competitive but distant (gap 20-45%)
-- **Pink/Gray** = Far behind or beyond the analysis threshold
-
-*For multi-winner elections (k > 1), these thresholds are scaled proportionally.*
-
-**Ballot Exhaustion Impact:**
-- If a candidate's **exhaustion % > victory gap %**, completing those
-  exhausted ballots *could* theoretically change the outcome.
-- The probability models estimate how likely that change actually is.
-- A high probability means ballot exhaustion meaningfully affected
-  competitiveness; a low probability means the outcome is robust.
-
-**Strategic Complexity:**
-- **Selfish** = the candidate's best strategy is simply getting more of their own supporters to vote.
-  This is the straightforward, expected case.
-- **Non-Selfish** = the candidate benefits from a more complex strategy, such as supporting
-  a weaker rival to change the elimination order. This is rare in real elections.
-
-**Preference Order Alignment:**
-- A **match** means the order candidates were eliminated lines up with how
-  close they were to winning. The results tell a clear story.
-- A **mismatch** means some candidates were eliminated earlier than their
-  competitiveness would suggest, or vice versa.
-                    """)
 
                 # ========================================
                 tab_gap, tab_exhaust, tab_strat, tab_align, tab_summary = st.tabs([
@@ -1005,10 +976,7 @@ if uploaded_file is not None:
                     # ATTRIBUTE 1: VICTORY GAP & MARGIN OF VICTORY
                     # ========================================
                     st.markdown("## 1. Victory Gap & Competitiveness")
-                    st.markdown("""
-                The **Victory Gap** shows how many additional votes (as % of total) each candidate needs to win.
-                The **Margin of Victory** is the smallest gap among non-winners - lower = more competitive.
-                    """)
+                    st.caption("How many additional votes (% of total) would each candidate need to win? Smaller gap = closer race. Colors indicate competitiveness tier; thresholds are scaled for multi-winner elections.")
 
                     # Build results table
                     order_data = []
@@ -1173,10 +1141,7 @@ if uploaded_file is not None:
                     # ATTRIBUTE 2: BALLOT EXHAUSTION IMPACT
                     # ========================================
                     st.markdown("## 2. Ballot Exhaustion Impact")
-                    st.markdown("""
-                **Ballot exhaustion** occurs when a voter's ranked choices are all eliminated.
-                If exhaustion % > victory gap %, completing those ballots *could* change the outcome.
-                    """)
+                    st.caption("Ballot exhaustion occurs when all of a voter's ranked choices are eliminated. If exhaustion % > victory gap %, completing those ballots could theoretically change the outcome.")
 
                     # Analyze exhaustion impact
                     impact_data = []
@@ -1516,10 +1481,7 @@ if uploaded_file is not None:
                     # ATTRIBUTE 3: STRATEGIC COMPLEXITY
                     # ========================================
                     st.markdown("## 3. Strategic Complexity")
-                    st.markdown("""
-                **Selfish Strategy**: Optimal path to victory is simply adding votes for oneself.
-                **Non-Selfish Strategy**: Optimal strategy requires supporting other candidates (spoiler effects).
-                    """)
+                    st.caption("Selfish: optimal path is simply gaining more self-support. Non-selfish: winning requires supporting a rival to shift the elimination order — a spoiler effect.")
 
                     strategy_types = [d['Strategy Type'] for d in order_data if d['Strategy Type'] not in ['-']]
                     selfish_count = strategy_types.count('Selfish')
@@ -1545,10 +1507,7 @@ if uploaded_file is not None:
                     # ATTRIBUTE 4: PREFERENCE ORDER ALIGNMENT
                     # ========================================
                     st.markdown("## 4. Preference Order Alignment")
-                    st.markdown("""
-                Does the **Social Choice Order** (elimination sequence) match the **Victory Gap Order** (sorted by closeness to winning)?
-                **Match** = RCV results are transparent. **No Match** = formal results may obscure true competitiveness.
-                    """)
+                    st.caption("Does the elimination order match how close candidates actually were to winning? A match means results are transparent; a mismatch reveals hidden complexity.")
 
                     matches, victory_gap_order, mismatches = compute_preference_order_alignment(results, strategies)
 
@@ -1654,7 +1613,7 @@ else:
     st.markdown("""
     ## Getting Started
 
-    1. **Upload** your election CSV file
+    1. **Upload** your election CSV file — or select a curated example
     2. **Configure** settings in the sidebar
     3. **Click** "Run Analysis" to see results
 
