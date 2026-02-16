@@ -976,7 +976,7 @@ if uploaded_file is not None:
                     # ATTRIBUTE 1: VICTORY GAP & MARGIN OF VICTORY
                     # ========================================
                     st.markdown("## 1. Victory Gap & Competitiveness")
-                    st.caption("How many additional votes (% of total) would each candidate need to win? Smaller gap = closer race. Colors indicate competitiveness tier; thresholds are scaled for multi-winner elections.")
+                    st.markdown("<p style='font-size:0.95rem; color:#555; margin-top:-0.3rem;'>How many additional votes (% of total) would each candidate need to win? Smaller gap = closer race. Colors indicate competitiveness tier; thresholds are scaled for multi-winner elections.</p>", unsafe_allow_html=True)
 
                     # Build results table
                     order_data = []
@@ -1141,7 +1141,7 @@ if uploaded_file is not None:
                     # ATTRIBUTE 2: BALLOT EXHAUSTION IMPACT
                     # ========================================
                     st.markdown("## 2. Ballot Exhaustion Impact")
-                    st.caption("Ballot exhaustion occurs when all of a voter's ranked choices are eliminated. If exhaustion % > victory gap %, completing those ballots could theoretically change the outcome.")
+                    st.markdown("<p style='font-size:0.95rem; color:#555; margin-top:-0.3rem;'>Ballot exhaustion occurs when all of a voter's ranked choices are eliminated. If exhaustion % > victory gap %, completing those ballots could theoretically change the outcome.</p>", unsafe_allow_html=True)
 
                     # Analyze exhaustion impact
                     impact_data = []
@@ -1481,7 +1481,7 @@ if uploaded_file is not None:
                     # ATTRIBUTE 3: STRATEGIC COMPLEXITY
                     # ========================================
                     st.markdown("## 3. Strategic Complexity")
-                    st.caption("Selfish: optimal path is simply gaining more self-support. Non-selfish: winning requires supporting a rival to shift the elimination order — a spoiler effect.")
+                    st.markdown("<p style='font-size:0.95rem; color:#555; margin-top:-0.3rem;'>Selfish: optimal path is simply gaining more self-support. Non-selfish: winning requires supporting a rival to shift the elimination order — a spoiler effect.</p>", unsafe_allow_html=True)
 
                     strategy_types = [d['Strategy Type'] for d in order_data if d['Strategy Type'] not in ['-']]
                     selfish_count = strategy_types.count('Selfish')
@@ -1507,7 +1507,7 @@ if uploaded_file is not None:
                     # ATTRIBUTE 4: PREFERENCE ORDER ALIGNMENT
                     # ========================================
                     st.markdown("## 4. Preference Order Alignment")
-                    st.caption("Does the elimination order match how close candidates actually were to winning? A match means results are transparent; a mismatch reveals hidden complexity.")
+                    st.markdown("<p style='font-size:0.95rem; color:#555; margin-top:-0.3rem;'>Does the elimination order match how close candidates actually were to winning? A match means results are transparent; a mismatch reveals hidden complexity.</p>", unsafe_allow_html=True)
 
                     matches, victory_gap_order, mismatches = compute_preference_order_alignment(results, strategies)
 
