@@ -323,8 +323,8 @@ with st.expander("What does this tool analyze?", expanded=False):
   </div>
 </div>
 
-<div style="margin-top:1rem; background:#f8f8f8; border:1px solid #e2e8f0; border-radius:0.5rem; padding:0.9rem 1.1rem;">
-  <strong style="font-size:0.92rem;">⚙️ How this is computed</strong>
+<div style="margin-top:1rem; background:#eef4fb; border-left:4px solid #1f4e79; border-radius:0.5rem; padding:0.9rem 1.1rem;">
+  <strong style="font-size:1rem; color:#1f4e79;">🧮 How this is computed</strong>
   <p style="margin:0.4rem 0 0; font-size:0.88rem; color:#374151;">
     Two polynomial-time algorithms make exact analysis tractable on real elections.
     A <strong>candidate reduction algorithm</strong> provably removes candidates who cannot influence the outcome
@@ -597,6 +597,7 @@ if use_example and uploaded_file is None:
         selected_example = st.selectbox(
             "Select an election",
             options=example_names,
+            format_func=lambda x: f"{example_names.index(x)+1}. {x}",
             help=f"{n_total} curated elections: {n_single} single-winner (k=1) and {n_portland} multi-winner Portland (k=3). Settings update automatically when you switch."
         )
 
@@ -1597,7 +1598,8 @@ if uploaded_file is not None:
                         return ['background-color: rgb(240,249,240)'] * len(row)
 
                     st.dataframe(
-                        align_df.style.apply(style_align_table, axis=1),
+                        align_df.style.apply(style_align_table, axis=1)
+                            .set_properties(subset=['Position', 'Match'], **{'text-align': 'center'}),
                         use_container_width=True,
                         hide_index=True
                     )
