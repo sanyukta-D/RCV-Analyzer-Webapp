@@ -564,6 +564,8 @@ if use_example and uploaded_file is None:
     # (filename, k, budget, keep_at_least, one-line description)
     single_winner_files = {
         "Minneapolis 2017 Council Ward 3 — Classic vote-splitting with spoiler dynamics": ("Minneapolis_20171107_CityCouncilWard3.csv", 1, 50.0, 7),
+        "NYC 2025 DEM Mayor — High-profile 12-candidate primary, one of the most watched RCV races": ("NewYorkCity_20250624_DEMMayorCitywide.csv.gz", 1, 30.0, 7),
+        "NYC 2021 DEM Mayor — 1M+ ballots, notable ballot exhaustion impact in citywide primary": ("NewYorkCity_20210622_DEM_Mayor.csv.gz", 1, 15.0, 7),
         "Burlington 2009 Mayor — Winner came from behind, overturning first-round plurality": ("Burlington_20090303_Mayor.csv", 1, 50.0, 7),
         "Alaska 2022 US House Special — First statewide RCV election in the US": ("Alaska_08162022_HouseofRepresentativesSpecial.csv", 1, 50.0, 7),
         "Maine 2018 US House CD2 — First congressional RCV race in US history": ("Maine_20181106_CongressionalDistrict2.csv", 1, 50.0, 7),
@@ -1659,12 +1661,12 @@ if uploaded_file is not None:
                     with col1:
                         csv_data = display_df.to_csv(index=False)
                         st.download_button("Download Victory Gap Table (CSV)", data=csv_data,
-                                           file_name=f"rcv_victory_gap_{file_name.replace('.csv', '')}.csv",
+                                           file_name=f"rcv_victory_gap_{file_name.replace('.csv.gz', '').replace('.csv', '')}.csv",
                                            mime="text/csv")
                     with col2:
                         impact_csv = impact_df.to_csv(index=False)
                         st.download_button("Download Exhaustion Impact (CSV)", data=impact_csv,
-                                           file_name=f"rcv_exhaustion_{file_name.replace('.csv', '')}.csv",
+                                           file_name=f"rcv_exhaustion_{file_name.replace('.csv.gz', '').replace('.csv', '')}.csv",
                                            mime="text/csv")
 
 
