@@ -328,10 +328,10 @@ with st.expander("What does this tool analyze?", expanded=False):
   <p style="margin:0.4rem 0 0; font-size:0.88rem; color:#374151;">
     Two polynomial-time algorithms make exact analysis tractable on real elections.
     A <strong>candidate reduction algorithm</strong> provably removes candidates who cannot influence the outcome
-    within the given budget — reducing a 30-candidate election to a tractable subset without any loss of optimality.
+    within the given budget — reducing large elections (e.g., 10+ candidates) to a tractable subset without any loss of optimality.
     An <strong>exact strategy computation algorithm</strong> then determines, for each candidate, the true minimum-cost
-    path to winning across all possible round-by-round outcome sequences. Together, they reduce a search space
-    that would otherwise take years to enumerate to seconds.
+    path to winning across all possible round-by-round outcome sequences. Together, they enable exact analysis
+    on election instances that would otherwise be computationally infeasible.
   </p>
 </div>
 """, unsafe_allow_html=True)
@@ -1523,6 +1523,12 @@ if uploaded_file is not None:
 
                     # Per-candidate strategy table
                     st.markdown("#### Optimal Strategy per Candidate")
+                    STRATEGY_ICONS = {
+                        "Selfish": "● Selfish",
+                        "Non-Selfish": "★ Non-Selfish",
+                        "-": "—",
+                    }
+
                     strat_rows = []
                     for d in order_data:
                         gap = d['Victory Gap (%)']
@@ -1533,22 +1539,22 @@ if uploaded_file is not None:
                             "Candidate": d["Candidate"],
                             "Category": d["Category"],
                             "Victory Gap": gap_str,
-                            "Strategy Type": d["Strategy Type"],
+                            "Strategy Type": STRATEGY_ICONS.get(d["Strategy Type"], d["Strategy Type"]),
                             "Optimal Strategy": d["Required Strategy"],
                         })
                     strat_df = pd.DataFrame(strat_rows)
 
                     def style_strat_table(row):
-                        stype = row["Strategy Type"]
                         cat = row["Category"]
-                        if cat == "Winner":
-                            return ['background-color: rgb(189,223,167)'] * len(row)
-                        elif stype == "Non-Selfish":
-                            return ['background-color: rgb(255,243,205)'] * len(row)
-                        elif stype == "Selfish":
-                            return ['background-color: rgb(235,245,255)'] * len(row)
-                        return [''] * len(row)
+                        color = CATEGORY_COLORS.get(cat, {}).get('bg', '')
+                        return [f'background-color: {color}'] * len(row)
 
+                    st.markdown("""
+<div style="display:flex; gap:1.2rem; font-size:0.82rem; margin-bottom:0.4rem; color:#555;">
+  <span><strong>●</strong> Selfish — self-support only</span>
+  <span><strong>★</strong> Non-Selfish — requires supporting a rival</span>
+</div>
+""", unsafe_allow_html=True)
                     st.dataframe(
                         strat_df.style.apply(style_strat_table, axis=1),
                         use_container_width=True,
@@ -1565,26 +1571,36 @@ if uploaded_file is not None:
 
                     matches, victory_gap_order, mismatches = compute_preference_order_alignment(results, strategies)
 
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.markdown("**Social Choice Order** (actual RCV result):")
-                        sco_names = [f"{i+1}. {reverse_mapping.get(c, c)}" for i, c in enumerate(results)]
-                        st.write(" → ".join(sco_names[:5]) + ("..." if len(sco_names) > 5 else ""))
-
-                    with col2:
-                        st.markdown("**Victory Gap Order** (sorted by gap):")
-                        vgo_names = [f"{i+1}. {reverse_mapping.get(c, c)}" for i, c in enumerate(victory_gap_order)]
-                        st.write(" → ".join(vgo_names[:5]) + ("..." if len(vgo_names) > 5 else ""))
-
                     if matches:
-                        st.success("**Perfect Match!** The elimination order reflects true competitive dynamics. RCV results are transparent.")
+                        st.success("**Perfect Match** — the elimination order reflects the victory gap ranking. Results are transparent.")
                     else:
-                        st.warning(f"**No Match** at {len(mismatches)} position(s). The elimination sequence differs from victory gap ranking.")
-                        with st.expander("View Mismatches"):
-                            for pos, sco, vgo in mismatches:
-                                sco_name = reverse_mapping.get(sco, sco)
-                                vgo_name = reverse_mapping.get(vgo, vgo)
-                                st.write(f"Position {pos}: SCO has **{sco_name}**, VGO has **{vgo_name}**")
+                        st.warning(f"**{len(mismatches)} mismatch(es)** — the elimination sequence differs from the victory gap ranking at {len(mismatches)} position(s).")
+
+                    # Comparison table
+                    mismatch_positions = {pos for pos, _, _ in mismatches}
+                    align_rows = []
+                    for i, (sco, vgo) in enumerate(zip(results, victory_gap_order)):
+                        sco_name = reverse_mapping.get(sco, sco)
+                        vgo_name = reverse_mapping.get(vgo, vgo)
+                        is_match = (i + 1) not in mismatch_positions
+                        align_rows.append({
+                            "Position": i + 1,
+                            "Social Choice Order": sco_name,
+                            "Victory Gap Order": vgo_name,
+                            "Match": "✅" if is_match else "❌",
+                        })
+                    align_df = pd.DataFrame(align_rows)
+
+                    def style_align_table(row):
+                        if row["Match"] == "❌":
+                            return ['background-color: rgb(255,235,230)'] * len(row)
+                        return ['background-color: rgb(240,249,240)'] * len(row)
+
+                    st.dataframe(
+                        align_df.style.apply(style_align_table, axis=1),
+                        use_container_width=True,
+                        hide_index=True
+                    )
 
                     # ========================================
                     # SUMMARY INSIGHTS
