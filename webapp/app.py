@@ -569,6 +569,8 @@ if use_example and uploaded_file is None:
         "Maine 2018 US House CD2 — First congressional RCV race in US history": ("Maine_20181106_CongressionalDistrict2.csv", 1, 50.0, 7),
         "NYC 2021 Council D23 — 7-candidate primary with tight margins and complex transfers": ("NewYorkCity_20210622_DEM_CityCouncilD23.csv", 1, 50.0, 7),
         "Minneapolis 2021 Mayor — 18 candidates, tests large-field candidate reduction": ("Minneapolis_20211102_Mayor.csv", 1, 10.0, 7),
+        "NYC 2021 DEM Mayor — 13-candidate primary with notable ballot exhaustion impact": ("NewYorkCity_2021_DEMMayorCitywide_agg.csv", 1, 15.0, 7),
+        "NYC 2025 DEM Mayor — High-profile primary testing RCV in the largest US city": ("NewYorkCity_2025_DEMMayorCitywide_agg.csv", 1, 15.0, 7),
     }
 
     for name, (filename, ex_k, ex_budget, ex_keep) in single_winner_files.items():
