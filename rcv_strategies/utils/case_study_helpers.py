@@ -84,8 +84,7 @@ def get_ballot_counts_df(candidates_mapping, df):
         # If at least one valid candidate is found, form the ballot type string
         if valid_candidates:
             ballot_type = ''.join(valid_candidates)
-            row_count = int(row['count']) if 'count' in df.columns else 1
-            ballot_counts[ballot_type] = ballot_counts.get(ballot_type, 0) + row_count
+            ballot_counts[ballot_type] = ballot_counts.get(ballot_type, 0) + 1
 
     return ballot_counts
 
