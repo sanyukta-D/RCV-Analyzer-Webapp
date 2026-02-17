@@ -252,7 +252,7 @@ st.markdown("""
 st.markdown("""
 <div class="main-header">
     <h1>🗳️ RCV Election Analyzer</h1>
-    <p>Exactly compute how competitive, strategically complex, and robust your RCV election is — using novel polynomial-time algorithms.</p>
+    <p>Computational Analysis of Ranked Choice Voting</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -324,7 +324,7 @@ with st.expander("What does this tool analyze?", expanded=False):
 </div>
 
 <div style="margin-top:1rem; background:#eef4fb; border-left:4px solid #1f4e79; border-radius:0.5rem; padding:0.9rem 1.1rem;">
-  <strong style="font-size:1rem; color:#1f4e79;">🧮 How this is computed</strong>
+  <strong style="font-size:1rem; color:#1f4e79;">🔬 How this is computed</strong>
   <p style="margin:0.4rem 0 0; font-size:0.88rem; color:#374151;">
     Two polynomial-time algorithms make exact analysis tractable on real elections.
     A <strong>candidate reduction algorithm</strong> provably removes candidates who cannot influence the outcome
@@ -985,7 +985,7 @@ if uploaded_file is not None:
                 elif computed_threshold < budget_percent and strategies:
                     st.info(f"**Note:** Due to election complexity ({len(candidates_list)} candidates), strategies were computed at **{computed_threshold:.1f}%** budget threshold (reduced from your {budget_percent:.0f}% setting).")
 
-                st.markdown("# Election Attributes")
+                st.markdown("# Algorithmic Election Analysis")
 
 
                 # ========================================
