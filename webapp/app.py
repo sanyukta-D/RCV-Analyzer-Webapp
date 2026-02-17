@@ -1514,12 +1514,46 @@ if uploaded_file is not None:
                         st.metric("Non-Selfish Strategies", non_selfish_count)
                     with col3:
                         complexity = "Simple" if all_selfish else "Complex"
-                        st.metric("Strategic Complexity", complexity)
+                        st.metric("Overall Complexity", complexity)
 
                     if all_selfish:
-                        st.success(f"**All optimal strategies are selfish** (self-support only) at {budget_percent}% allowance. This election exhibits plurality-like strategic dynamics.")
+                        st.success(f"**All optimal strategies are selfish** (self-support only) at {budget_percent}% budget.")
                     else:
-                        st.warning(f"**Some candidates have non-selfish optimal strategies** at {budget_percent}% allowance. Supporting rivals (spoiler effects) could be advantageous.")
+                        st.warning(f"**Some candidates have non-selfish optimal strategies** at {budget_percent}% budget — supporting a rival is the more efficient path to winning.")
+
+                    # Per-candidate strategy table
+                    st.markdown("#### Optimal Strategy per Candidate")
+                    strat_rows = []
+                    for d in order_data:
+                        gap = d['Victory Gap (%)']
+                        gap_str = f"{gap:.2f}%" if gap is not None and gap != float('inf') else (
+                            f"≥ {computed_threshold:.1f}%" if strategies else "N/A"
+                        )
+                        strat_rows.append({
+                            "Candidate": d["Candidate"],
+                            "Category": d["Category"],
+                            "Victory Gap": gap_str,
+                            "Strategy Type": d["Strategy Type"],
+                            "Optimal Strategy": d["Required Strategy"],
+                        })
+                    strat_df = pd.DataFrame(strat_rows)
+
+                    def style_strat_table(row):
+                        stype = row["Strategy Type"]
+                        cat = row["Category"]
+                        if cat == "Winner":
+                            return ['background-color: rgb(189,223,167)'] * len(row)
+                        elif stype == "Non-Selfish":
+                            return ['background-color: rgb(255,243,205)'] * len(row)
+                        elif stype == "Selfish":
+                            return ['background-color: rgb(235,245,255)'] * len(row)
+                        return [''] * len(row)
+
+                    st.dataframe(
+                        strat_df.style.apply(style_strat_table, axis=1),
+                        use_container_width=True,
+                        hide_index=True
+                    )
 
                     # ========================================
 
