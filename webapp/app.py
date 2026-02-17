@@ -565,12 +565,12 @@ if use_example and uploaded_file is None:
     single_winner_files = {
         "Minneapolis 2017 Council Ward 3 — Classic vote-splitting with spoiler dynamics": ("Minneapolis_20171107_CityCouncilWard3.csv", 1, 50.0, 7),
         "NYC 2025 DEM Mayor — High-profile 12-candidate primary, one of the most watched RCV races": ("NewYorkCity_20250624_DEMMayorCitywide.csv.gz", 1, 30.0, 7),
-        "NYC 2021 DEM Mayor — 1M+ ballots, notable ballot exhaustion impact in citywide primary": ("NewYorkCity_20210622_DEM_Mayor.csv.gz", 1, 15.0, 7),
+        "NYC 2021 DEM Mayor — 1M+ ballots, winner flips under ballot completion models": ("NewYorkCity_20210622_DEM_Mayor.csv.gz", 1, 15.0, 7),
         "Burlington 2009 Mayor — Winner came from behind, overturning first-round plurality": ("Burlington_20090303_Mayor.csv", 1, 50.0, 7),
-        "Alaska 2022 US House Special — First statewide RCV election in the US": ("Alaska_08162022_HouseofRepresentativesSpecial.csv", 1, 50.0, 7),
-        "Maine 2018 US House CD2 — First congressional RCV race in US history": ("Maine_20181106_CongressionalDistrict2.csv", 1, 50.0, 7),
         "NYC 2021 Council D23 — 7-candidate primary with tight margins and complex transfers": ("NewYorkCity_20210622_DEM_CityCouncilD23.csv", 1, 50.0, 7),
         "Minneapolis 2021 Mayor — 18 candidates, tests large-field candidate reduction": ("Minneapolis_20211102_Mayor.csv", 1, 10.0, 7),
+        "Alaska 2022 US House Special — First statewide RCV election in the US": ("Alaska_08162022_HouseofRepresentativesSpecial.csv", 1, 50.0, 7),
+        "Maine 2018 US House CD2 — First congressional RCV race in US history": ("Maine_20181106_CongressionalDistrict2.csv", 1, 50.0, 7),
     }
 
     for name, (filename, ex_k, ex_budget, ex_keep) in single_winner_files.items():
@@ -1518,9 +1518,9 @@ if uploaded_file is not None:
                         st.metric("Overall Complexity", complexity)
 
                     if all_selfish:
-                        st.success(f"**All optimal strategies are selfish** (self-support only) at {budget_percent}% budget.")
+                        st.success(f"**All optimal strategies are selfish** (self-support only) at {computed_threshold:.1f}% budget.")
                     else:
-                        st.warning(f"**Some candidates have non-selfish optimal strategies** at {budget_percent}% budget — supporting a rival is the more efficient path to winning.")
+                        st.warning(f"**Some candidates have non-selfish optimal strategies** at {computed_threshold:.1f}% budget — supporting a rival is the more efficient path to winning.")
 
                     # Per-candidate strategy table
                     st.markdown("#### Optimal Strategy per Candidate")
