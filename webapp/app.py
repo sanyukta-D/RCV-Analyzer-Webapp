@@ -252,7 +252,7 @@ st.markdown("""
 st.markdown("""
 <div class="main-header">
     <h1>🗳️ RCV Election Analyzer</h1>
-    <p>Computational analysis of ranked choice voting dynamics</p>
+    <p>Exactly compute how competitive, strategically complex, and robust your RCV election is — using novel polynomial-time algorithms.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -310,7 +310,7 @@ with st.expander("What does this tool analyze?", expanded=False):
     <strong>Strategic Complexity</strong>
     <p style="margin:0.3rem 0 0; font-size:0.88rem; color:#374151;">
       Is the optimal path to victory simple self-promotion, or does it require
-      boosting a rival to split the opposition (non-selfish strategy)?
+      adding votes for a rival to shift the elimination order (non-selfish strategy)?
     </p>
   </div>
   <div style="background:#f0fdf4; border-left:4px solid #15803d; border-radius:0.5rem; padding:0.85rem 1rem;">
@@ -321,6 +321,18 @@ with st.expander("What does this tool analyze?", expanded=False):
       Mismatches reveal hidden complexity in the result.
     </p>
   </div>
+</div>
+
+<div style="margin-top:1rem; background:#f8f8f8; border:1px solid #e2e8f0; border-radius:0.5rem; padding:0.9rem 1.1rem;">
+  <strong style="font-size:0.92rem;">⚙️ How this is computed</strong>
+  <p style="margin:0.4rem 0 0; font-size:0.88rem; color:#374151;">
+    Two polynomial-time algorithms make exact analysis tractable on real elections.
+    A <strong>candidate reduction algorithm</strong> provably removes candidates who cannot influence the outcome
+    within the given budget — reducing a 30-candidate election to a tractable subset without any loss of optimality.
+    An <strong>exact strategy computation algorithm</strong> then determines, for each candidate, the true minimum-cost
+    path to winning across all possible round-by-round outcome sequences. Together, they reduce a search space
+    that would otherwise take years to enumerate to seconds.
+  </p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -464,7 +476,7 @@ with st.sidebar:
         0.0, 100.0,
         value=st.session_state.get('pending_budget', 10.0),
         step=0.5,
-        help="Maximum additional votes to consider for strategy analysis (algorithmic tradeability threshold)"
+        help="Maximum additional votes to consider for strategy analysis (algorithmic tractability threshold)"
     )
 
     with st.expander("Advanced Options"):
@@ -915,7 +927,7 @@ if uploaded_file is not None:
                 # RESULTS DISPLAY
                 # ========================================
                 st.markdown("---")
-                st.markdown("# RCV Results")
+                st.markdown("# Election Overview")
 
                 # Overview metrics
                 col1, col2, col3, col4 = st.columns(4)
@@ -955,16 +967,24 @@ if uploaded_file is not None:
 
                 if candidates_removed:
                     removed_names = [reverse_mapping.get(c, c) for c in candidates_removed if c in reverse_mapping or c in candidates_removed]
-                    removal_msg = f"**Candidate Reduction:** Reduced from {len(candidates_list)} to {len(candidates_list) - len(candidates_removed)} candidates for tractable analysis."
-                    if computed_threshold < budget_percent:
-                        removal_msg += f" Found working threshold at **{computed_threshold:.1f}%** budget."
-                    st.info(removal_msg)
-                    with st.expander("Removed candidates"):
+                    threshold_note = f" Effective budget threshold: **{computed_threshold:.1f}%**." if computed_threshold < budget_percent else ""
+                    st.markdown(f"""
+<div style="background:#eef4fb; border-left:4px solid #1f4e79; border-radius:0.5rem; padding:0.8rem 1rem; margin:0.5rem 0;">
+  <strong>⚙️ Candidate Reduction Applied</strong><br>
+  <span style="font-size:0.9rem;">
+    This election has <strong>{len(candidates_list)} candidates</strong>. The candidate reduction algorithm
+    identified <strong>{len(candidates_removed)} candidates</strong> who cannot influence the outcome within
+    the given budget and removed them — without any loss of optimality. Strategy computation ran on the
+    remaining <strong>{len(candidates_list) - len(candidates_removed)} candidates</strong>.{threshold_note}
+  </span>
+</div>
+""", unsafe_allow_html=True)
+                    with st.expander("View removed candidates"):
                         st.write(", ".join(removed_names) if removed_names else str(candidates_removed))
                 elif computed_threshold < budget_percent and strategies:
                     st.info(f"**Note:** Due to election complexity ({len(candidates_list)} candidates), strategies were computed at **{computed_threshold:.1f}%** budget threshold (reduced from your {budget_percent:.0f}% setting).")
 
-                st.markdown("# Detailed Insights")
+                st.markdown("# Election Attributes")
 
 
                 # ========================================
@@ -1481,7 +1501,7 @@ if uploaded_file is not None:
                     # ATTRIBUTE 3: STRATEGIC COMPLEXITY
                     # ========================================
                     st.markdown("## 3. Strategic Complexity")
-                    st.markdown("<p style='font-size:0.95rem; color:#555; margin-top:-0.3rem;'>Selfish: optimal path is simply gaining more self-support. Non-selfish: winning requires supporting a rival to shift the elimination order — a spoiler effect.</p>", unsafe_allow_html=True)
+                    st.markdown("<p style='font-size:0.95rem; color:#555; margin-top:-0.3rem;'>Selfish strategy: the optimal path to winning is gaining more first-preference votes for oneself. Non-selfish strategy: winning requires adding votes for a rival, engineering a favorable shift in the elimination order.</p>", unsafe_allow_html=True)
 
                     strategy_types = [d['Strategy Type'] for d in order_data if d['Strategy Type'] not in ['-']]
                     selfish_count = strategy_types.count('Selfish')
@@ -1537,35 +1557,35 @@ if uploaded_file is not None:
                     # ========================================
 
                 with tab_summary:
-                    st.markdown("## Summary: Key Insights")
+                    st.markdown("## Summary")
 
                     insights = []
 
                     # Competitiveness insight
                     if margin_of_victory < 10:
-                        insights.append(f"**Highly competitive election** - margin of victory is only {margin_of_victory:.2f}%")
+                        insights.append(f"**Highly competitive** — margin of victory is only {margin_of_victory:.2f}%")
                     elif margin_of_victory < 25:
-                        insights.append(f"**Moderately competitive election** - margin of victory is {margin_of_victory:.2f}%")
+                        insights.append(f"**Moderately competitive** — margin of victory is {margin_of_victory:.2f}%")
                     else:
-                        insights.append(f"**Decisive victory** - margin of victory is {margin_of_victory:.2f}%")
+                        insights.append(f"**Decisive victory** — margin of victory is {margin_of_victory:.2f}%")
 
                     # Exhaustion insight
                     if candidates_with_potential:
-                        insights.append(f"**Exhaustion could matter** - {len(candidates_with_potential)} candidate(s) have exhaust > gap")
+                        insights.append(f"**Exhaustion may matter** — {len(candidates_with_potential)} candidate(s) have exhaustion exceeding their victory gap")
                     else:
-                        insights.append("**Robust to exhaustion** - completing ballots unlikely to change outcome")
+                        insights.append("**Robust to exhaustion** — completing ballots is unlikely to change the outcome")
 
                     # Strategy insight
                     if all_selfish:
-                        insights.append("**Simple strategic dynamics** - all optimal strategies are self-support")
+                        insights.append("**Strategically simple** — all optimal strategies are self-support only")
                     else:
-                        insights.append("**Complex strategic dynamics** - some candidates benefit from supporting rivals")
+                        insights.append("**Strategically complex** — some candidates have optimal non-selfish strategies involving rivals")
 
                     # Alignment insight
                     if matches:
-                        insights.append("**Transparent results** - elimination order matches competitiveness ranking")
+                        insights.append("**Transparent result** — elimination order matches the victory gap ranking")
                     else:
-                        insights.append("**Some opacity** - elimination order differs from competitiveness ranking")
+                        insights.append("**Ordering mismatch** — elimination sequence differs from the victory gap ranking")
 
                     for insight in insights:
                         st.markdown(f"- {insight}")
@@ -1617,14 +1637,12 @@ else:
     2. **Configure** settings in the sidebar
     3. **Click** "Run Analysis" to see results
 
-    ### What You'll Get
+    ### Four Election Attributes
 
-    Based on the research paper *"Simpler Than You Think: The Practical Dynamics of RCV"*:
-
-    1. **Victory Gap & Margin of Victory** - How close is each candidate to winning?
-    2. **Ballot Exhaustion Impact** - Could completing exhausted ballots change the outcome?
-    3. **Strategic Complexity** - Are optimal strategies simple (self-support) or complex (support rivals)?
-    4. **Preference Order Alignment** - Does elimination order reflect true competitiveness?
+    1. **Victory Gap & Competitiveness** — How far is each candidate from winning?
+    2. **Ballot Exhaustion Impact** — Could completing exhausted ballots change the outcome?
+    3. **Strategic Complexity** — Is the optimal path to winning simple self-support, or does it require supporting a rival?
+    4. **Preference Order Alignment** — Does the elimination order reflect how close candidates actually were to winning?
 
     ### Data Format
 
