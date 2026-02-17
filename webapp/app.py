@@ -966,7 +966,7 @@ if uploaded_file is not None:
                 candidates_removed = analysis_result.get("candidates_removed", [])
                 candidates_retained = analysis_result.get("candidates_retained", [])
 
-                # Debug info about reduction
+                st.markdown("# Algorithmic Election Analysis")
 
                 if candidates_removed:
                     removed_names = [reverse_mapping.get(c, c) for c in candidates_removed if c in reverse_mapping or c in candidates_removed]
@@ -986,8 +986,6 @@ if uploaded_file is not None:
                         st.write(", ".join(removed_names) if removed_names else str(candidates_removed))
                 elif computed_threshold < budget_percent and strategies:
                     st.info(f"**Note:** Due to election complexity ({len(candidates_list)} candidates), strategies were computed at **{computed_threshold:.1f}%** budget threshold (reduced from your {budget_percent:.0f}% setting).")
-
-                st.markdown("# Algorithmic Election Analysis")
 
 
                 # ========================================
