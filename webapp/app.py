@@ -326,17 +326,18 @@ with st.expander("What does this tool analyze?", expanded=False):
 <div style="margin-top:1rem; background:#eef4fb; border-left:4px solid #1f4e79; border-radius:0.5rem; padding:0.9rem 1.1rem;">
   <strong style="font-size:1rem; color:#1f4e79;">🔬 How is this computed?</strong>
   <p style="margin:0.4rem 0 0; font-size:0.88rem; color:#374151;">
-    The <strong>budget</strong> (set in the sidebar) asks: "what if a campaign could mobilize up to B% more voters
-    to show up and vote strategically — could a losing candidate win?" Two polynomial-time algorithms answer this exactly.
-  </p>
-  <p style="margin:0.4rem 0 0; font-size:0.88rem; color:#374151;">
+    The four analyses above are powered by two core polynomial-time algorithms.
     A <strong>candidate reduction algorithm</strong> provably removes candidates who cannot influence the outcome
-    within the given budget — reducing large elections (e.g., 10+ candidates) to a tractable subset without any loss of optimality.
+    — reducing large elections (e.g., 10+ candidates) to a tractable subset without any loss of optimality.
+    An <strong>exact strategy computation algorithm</strong> then determines each candidate's true minimum-cost path to winning.
+    Together, they enable the computation of <strong>victory gaps</strong>, <strong>strategy types</strong> (selfish vs. non-selfish),
+    and <strong>ballot exhaustion impact</strong> — transforming RCV from an opaque multi-round process into an interpretable system,
+    on elections that would otherwise be infeasible to analyze.
   </p>
-  <p style="margin:0.4rem 0 0; font-size:0.88rem; color:#374151;">
-    An <strong>exact strategy computation algorithm</strong> then determines, for each candidate, the true minimum-cost
-    path to winning across all possible round-by-round outcome sequences. Together, they enable exact analysis
-    on election instances that would otherwise be computationally infeasible.
+  <p style="margin:0.4rem 0 0; font-size:0.78rem; color:#6b7280;">
+    The <strong>budget</strong> (sidebar) sets the maximum additional voter turnout to consider — the candidate
+    reduction algorithm uses it to determine which candidates are irrelevant, automatically finding the
+    highest feasible threshold that keeps exact analysis tractable.
   </p>
 </div>
 """, unsafe_allow_html=True)
