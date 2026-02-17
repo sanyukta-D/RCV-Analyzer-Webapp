@@ -330,8 +330,8 @@ with st.expander("What does this tool analyze?", expanded=False):
     A <strong>candidate reduction algorithm</strong> provably removes candidates who cannot influence the outcome
     — reducing large elections (e.g., 10+ candidates) to a tractable subset without any loss of optimality.
     An <strong>exact strategy computation algorithm</strong> then determines each candidate's true minimum-cost path to winning.
-    Together, they enable the computation of <strong>victory gaps</strong>, <strong>strategy types</strong> (selfish vs. non-selfish),
-    and <strong>ballot exhaustion impact</strong> — transforming RCV from an opaque multi-round process into an interpretable system,
+    Together, they enable the computation of the above attributes
+    — transforming RCV from an opaque multi-round process into an interpretable system,
     on elections that would otherwise be infeasible to analyze.
   </p>
   <p style="margin:0.4rem 0 0; font-size:0.78rem; color:#6b7280;">
