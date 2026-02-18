@@ -484,7 +484,7 @@ with st.sidebar:
         step=0.5,
         help="Analyze the election assuming up to this much additional voter turnout. For example, 10% asks: which candidates could win if up to 10% more voters showed up to support them? The system automatically adjusts this if needed for computational tractability."
     )
-    st.caption("i.e., which candidates could win if up to this many additional voters showed up for them?")
+    st.caption("i.e., find which candidates could win if up to this many additional votes were added to the election.")
 
     with st.expander("Advanced Options"):
         keep_at_least = st.slider(
