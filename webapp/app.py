@@ -482,8 +482,9 @@ with st.sidebar:
         0.0, 100.0,
         value=st.session_state.get('pending_budget', 10.0),
         step=0.5,
-        help="Maximum additional votes to consider for strategy analysis (algorithmic tractability threshold)"
+        help="Analyze the election assuming up to this much additional voter turnout. For example, 10% asks: which candidates could win if up to 10% more voters showed up to support them? The system automatically adjusts this if needed for computational tractability."
     )
+    st.caption("i.e., which candidates could win if up to this many additional voters showed up for them?")
 
     with st.expander("Advanced Options"):
         keep_at_least = st.slider(
